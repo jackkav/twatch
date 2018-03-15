@@ -13,5 +13,17 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "precommit": "pretty-quick --staged"
+  },
+  "devDependencies": {
+    "husky": "^0.14.3",
+    "prettier": "^1.11.1",
+    "pretty-quick": "^1.4.1"
+  },
+  "prettier": {
+    "printWidth": 120,
+    "singleQuote": true,
+    "bracketSpacing": false,
+    "trailingComma": "es5",
+    "semi": false
   }
 }
