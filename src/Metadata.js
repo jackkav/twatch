@@ -7,7 +7,6 @@ export class Metadata extends Component {
   }
 
   async componentWillMount() {
-    console.log('t')
     this.setState({ isFetching: true })
     const { imdbRating, Actors, Metascore, Genre, Plot } = await getOmdb(
       this.props.movie.movieTitle,

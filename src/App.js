@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-
 import 'tachyons'
 import { Scraper } from './Scraper'
 
