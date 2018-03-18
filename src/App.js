@@ -7,7 +7,7 @@ import moment from 'moment'
 import 'tachyons'
 
 class App extends Component {
-  state = { movies: [] }
+  state = { movies: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] }
   async componentWillMount() {
     const scrapeKey = 'aggro.pb.201'
     if (!isExpired(scrapeKey)) {
@@ -48,18 +48,19 @@ class FlexTable extends Component {
 class OuterRow extends Component {
   state = {
     expanded: false,
-    movie: {},
   }
   open = () => this.setState(p => ({ expanded: !p.expanded }))
 
   render() {
     console.log(this.props.movie.uploadedAt)
-    if (!this.props.movie) {
+    if (!this.props.movie.title) {
       return (
         <div>
           <div className="flex ">
             <div className="outline w-100 pa3">
-              <code className="bg-gray gray">Loading please wait...Loading please wait...</code>
+              <code className="bg-light-gray light-gray">
+                .................................. ...........................
+              </code>
             </div>
           </div>
         </div>
@@ -113,7 +114,32 @@ class Scores extends Component {
   }
 
   render() {
-    if (this.state.isFetching) return <div>loading</div>
+    if (!this.state.imdbRating)
+      return (
+        <div>
+          <div>
+            IMDB: <code className="bg-light-gray light-gray">7.5</code>
+          </div>
+          <div>
+            Metascore: <code className="bg-light-gray light-gray">7.5</code>
+          </div>
+          <div>
+            Genre: <code className="bg-light-gray light-gray">Comedy, Crime, Mystery</code>
+          </div>
+          <div>
+            Actors:
+            <code className="bg-light-gray light-gray">
+              Jason Bateman, Rachel McAdams, Kyle Chandler, Sharon Horgan
+            </code>
+          </div>
+          <div>
+            Plot:
+            <code className="bg-light-gray light-gray">
+              A group of friends who meet regularly for game nights find themselves trying to solve a murder mystery.
+            </code>
+          </div>
+        </div>
+      )
     return (
       <div>
         <div>IMDB: {this.state.imdbRating}</div>
