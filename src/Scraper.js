@@ -35,12 +35,58 @@ export class Scraper extends Component {
 }
 
 class FlexTable extends Component {
+  state = { showCAM: true }
+  toggle = () => this.setState(p => ({ showCAM: !p.showCAM }))
   render() {
     return (
       <div className="pa2 bg-gray">
+        <Header toggle={this.toggle} />
         {sortBy(this.props.movies, x => moment(x))
+          .filter(x => (this.state.showCAM ? true : x.hd))
           .reverse()
           .map(x => <OuterRow key={shortid.generate()} movie={x} />)}
+      </div>
+    )
+  }
+}
+class Header extends Component {
+  state = {
+    expanded: false,
+  }
+  open = () => this.setState(p => ({ expanded: !p.expanded }))
+
+  render() {
+    return (
+      <div>
+        <div className="flex bg-lightest-blue black" onClick={this.open}>
+          <div className="outline w-100 pa3 tc">
+            <code>Pastybay</code>
+          </div>
+        </div>
+        {this.state.expanded && <Inner toggle={this.props.toggle} />}
+      </div>
+    )
+  }
+}
+class Inner extends Component {
+  state = { last: null }
+  componentWillMount() {
+    const scrapeKey = 'aggro.pb.201.lastScrape'
+    const expires = localStorage.getItem(scrapeKey)
+    this.setState({
+      expires,
+    })
+  }
+
+  render() {
+    return (
+      <div className="flex flex-wrap bg-white items-start">
+        <div className="w-1 pa3">
+          <code>Next refresh: {moment(this.state.expires).fromNow()}</code>
+        </div>
+        <div className="w-1 pa3 grow">
+          <code onClick={this.props.toggle}>Only show HD</code>
+        </div>
       </div>
     )
   }
@@ -68,8 +114,10 @@ class OuterRow extends Component {
       <div>
         <div className="flex bg-lightest-blue black" onClick={this.open}>
           <div className="outline w-100 pa3">
-            <code>{this.props.movie.movieTitle}</code>
-            <code className="fr">{this.props.movie.hd ? 'HD' : 'CAM'}</code>
+            <div className="grow">
+              <code>{this.props.movie.movieTitle}</code>
+              <code className="fr">{this.props.movie.hd ? 'HD' : 'CAM'}</code>
+            </div>
           </div>
         </div>
         {this.state.expanded && <InnerRow movie={this.props.movie} />}
