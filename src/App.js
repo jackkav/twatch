@@ -37,7 +37,7 @@ export default App
 class FlexTable extends Component {
   render() {
     return (
-      <div className="pa2">
+      <div className="pa2 bg-gray">
         {sortBy(this.props.movies, x => moment(x))
           .reverse()
           .map(x => <OuterRow key={shortid.generate()} movie={x} />)}
@@ -56,7 +56,7 @@ class OuterRow extends Component {
     if (!this.props.movie.title) {
       return (
         <div>
-          <div className="flex ">
+          <div className="flex">
             <div className="outline w-100 pa3">
               <code className="bg-light-gray light-gray">
                 .................................. ...........................
@@ -68,7 +68,7 @@ class OuterRow extends Component {
     }
     return (
       <div>
-        <div className="flex dim" onClick={this.open}>
+        <div className="flex bg-dark-blue white" onClick={this.open}>
           <div className="outline w-100 pa3">
             <code>{this.props.movie.title || 'Not available'}</code>
           </div>
@@ -81,14 +81,17 @@ class OuterRow extends Component {
 class InnerRow extends Component {
   render() {
     return (
-      <div className="flex flex-wrap items-start">
-        <div className="outline w-1 pa3">
-          <Trailer movie={this.props.movie} />
-        </div>
+      <div className="flex flex-wrap bg-white items-start">
         <div className="outline w-1 pa3">
           <div>Released: {this.props.movie.uploadedAt.slice(0, 10)}</div>
           <div>Position: #{this.props.movie.index + 1}</div>
           <div>Quality: {this.props.movie.quality}</div>
+          <div>
+            Download: <a href={this.props.movie.magnet}>Here</a>
+          </div>
+        </div>
+        <div className="outline w-1 pa3">
+          <Trailer movie={this.props.movie} />
         </div>
         <div className="outline w-1 pa3">
           <Scores movie={this.props.movie} />
@@ -169,6 +172,8 @@ class Trailer extends Component {
         <img
           src={this.state.icon || 'http://icons.iconarchive.com/icons/dtafalonso/android-lollipop/72/Youtube-icon.png'}
           alt="yt"
+          width="120"
+          height="90"
         />
       </a>
     )
