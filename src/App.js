@@ -56,11 +56,10 @@ class OuterRow extends Component {
     if (!this.props.movie.title) {
       return (
         <div>
-          <div className="flex">
+          <div className="flex bg-lightest-blue black">
             <div className="outline w-100 pa3">
-              <code className="bg-light-gray light-gray">
-                .................................. ...........................
-              </code>
+              <code className="bg-light-blue light-blue">......................</code>
+              <code className="fr bg-light-blue light-blue">....</code>
             </div>
           </div>
         </div>
