@@ -27,7 +27,7 @@ export class Scraper extends Component {
       movies: sortBy(movies, 'uploadedAt').reverse(),
       fresh: true,
     })
-    setExpiry(scrapeKey, movies, 12)
+    setExpiry(scrapeKey, movies, 3)
   }
 
   render() {
