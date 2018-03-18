@@ -22,8 +22,9 @@ export class Scraper extends Component {
     console.log('loading fresh pb scrape')
     const movies = await getPB()
     // console.log(movies)
+
     this.setState({
-      movies,
+      movies: sortBy(movies, 'uploadedAt').reverse(),
       fresh: true,
     })
     setExpiry(scrapeKey, movies, 12)
@@ -41,9 +42,9 @@ class FlexTable extends Component {
     return (
       <div className="pa2 bg-gray">
         <Header toggle={this.toggle} />
-        {sortBy(this.props.movies, x => moment(x))
-          .filter(x => (this.state.showCAM ? true : x.hd))
+        {sortBy(this.props.movies, 'uploadedAt')
           .reverse()
+          .filter(x => this.state.showCAM || x.hd)
           .map(x => <OuterRow key={shortid.generate()} movie={x} />)}
       </div>
     )
@@ -110,6 +111,7 @@ class OuterRow extends Component {
         </div>
       )
     }
+    console.log(this.props.movie.movieTitle, this.props.movie.uploadedAt)
     return (
       <div>
         <div className="flex bg-lightest-blue black" onClick={this.open}>
@@ -134,9 +136,10 @@ class InnerRow extends Component {
         </div>
         <div className=" w-1 pa3">
           <div>Name: {this.props.movie.title}</div>
-          <div>Released: {this.props.movie.uploadedAt.slice(0, 10)}</div>
+          <div>Released: {moment(this.props.movie.uploadedAt).fromNow()}</div>
           <div>Position: #{this.props.movie.index + 1}</div>
           <div>Quality: {this.props.movie.quality}</div>
+          <div>Size: {this.props.movie.size}</div>
           <div>
             Download: <a href={this.props.movie.magnet}>Here</a>
           </div>
