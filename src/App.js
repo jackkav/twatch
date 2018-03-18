@@ -66,11 +66,13 @@ class OuterRow extends Component {
         </div>
       )
     }
+    const className = this.props.movie.hd ? 'white' : 'gray'
     return (
       <div>
-        <div className="flex bg-dark-blue white" onClick={this.open}>
+        <div className="flex bg-lightest-blue black" onClick={this.open}>
           <div className="outline w-100 pa3">
-            <code>{this.props.movie.title || 'Not available'}</code>
+            <code>{this.props.movie.movieTitle}</code>
+            <code className="fr">{this.props.movie.hd ? 'HD' : 'CAM'}</code>
           </div>
         </div>
         {this.state.expanded && <InnerRow movie={this.props.movie} />}
@@ -82,7 +84,11 @@ class InnerRow extends Component {
   render() {
     return (
       <div className="flex flex-wrap bg-white items-start">
-        <div className="outline w-1 pa3">
+        <div className=" w-1 pa3">
+          <Trailer movie={this.props.movie} />
+        </div>
+        <div className=" w-1 pa3">
+          <div>Name: {this.props.movie.title}</div>
           <div>Released: {this.props.movie.uploadedAt.slice(0, 10)}</div>
           <div>Position: #{this.props.movie.index + 1}</div>
           <div>Quality: {this.props.movie.quality}</div>
@@ -90,10 +96,7 @@ class InnerRow extends Component {
             Download: <a href={this.props.movie.magnet}>Here</a>
           </div>
         </div>
-        <div className="outline w-1 pa3">
-          <Trailer movie={this.props.movie} />
-        </div>
-        <div className="outline w-1 pa3">
+        <div className=" w-1 pa3">
           <Scores movie={this.props.movie} />
         </div>
       </div>
