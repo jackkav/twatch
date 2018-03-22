@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { get } from 'lodash'
+import ReactLoading from 'react-loading'
 
 export class Trailer extends Component {
   state = {
@@ -12,14 +13,10 @@ export class Trailer extends Component {
   }
 
   render() {
+    if (this.state.isFetching) return <ReactLoading type="bars" color="#000" />
     return (
       <a target="blank" href={this.state.watch}>
-        <img
-          src={this.state.icon || 'http://icons.iconarchive.com/icons/dtafalonso/android-lollipop/72/Youtube-icon.png'}
-          alt="yt"
-          width="120"
-          height="90"
-        />
+        <img src={this.state.icon} alt="yt" width="240" height="180" />
       </a>
     )
   }

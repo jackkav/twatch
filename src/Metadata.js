@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-
+import ReactLoading from 'react-loading'
 export class Metadata extends Component {
   state = {
     isFetching: false,
@@ -27,28 +27,7 @@ export class Metadata extends Component {
           <span class="lh-title ml3">{this.state.Error}</span>
         </div>
       )
-    if (!this.state.imdbRating)
-      return (
-        <div>
-          <div>
-            IMDB: <code className="bg-light-gray light-gray">7.5</code>
-          </div>
-          <div>
-            Metascore: <code className="bg-light-gray light-gray">7.5</code>
-          </div>
-          <div>
-            Genre: <code className="bg-light-gray light-gray">Comedy, Crime, Mystery</code>
-          </div>
-          <div>
-            Actors:
-            <code className="bg-light-gray light-gray">...............................</code>
-          </div>
-          <div>
-            Plot:
-            <code className="bg-light-gray light-gray">.....................</code>
-          </div>
-        </div>
-      )
+    if (!this.state.imdbRating) return <ReactLoading type="bars" color="#000" />
     return (
       <div>
         <div>IMDB: {this.state.imdbRating}</div>

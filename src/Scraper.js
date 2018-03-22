@@ -36,16 +36,16 @@ export class Scraper extends Component {
   }
 
   render() {
-    return <FlexTable movies={this.state.movies} />
+    return <Main movies={this.state.movies} />
   }
 }
 
-class FlexTable extends Component {
+class Main extends Component {
   state = { showAll: true }
   toggle = () => this.setState(p => ({ showAll: !p.showAll }))
   render() {
     return (
-      <div className="pa2 bg-gray">
+      <div className="pa2 bg-gray avenir">
         <Header toggle={this.toggle} showAll={this.state.showAll} />
         {sortBy(this.props.movies, 'uploadedAt')
           .reverse()
@@ -57,19 +57,9 @@ class FlexTable extends Component {
 }
 const Introduction = () => (
   <article class="mw7 center ph3 ph5-ns tc br2 pv5 bg-washed-green dark-green mb5">
-    <h1 class="fw6 f3 f2-ns lh-title mt0 mb3">This is a tagline. For x.</h1>
-    <h2 class="fw2 f4 lh-copy mt0 mb3">
-      This will change things. And we want you to be involved. This text needs to be longer for testing sake.
-    </h2>
-    <p class="fw1 f5 mt0 mb3">Sign up for beta access or learn more about x.</p>
-    <div>
-      <a class="f6 br-pill bg-dark-green no-underline washed-green ba b--dark-green grow pv2 ph3 dib mr3" href="#">
-        Sign Up
-      </a>
-      <a class="f6 br-pill dark-green no-underline ba grow pv2 ph3 dib" href="#">
-        Learn More
-      </a>
-    </div>
+    <h1 class="fw6 f3 f2-ns lh-title mt0 mb3">Welcome</h1>
+    <h2 class="fw2 f4 lh-copy mt0 mb3">The following is a list of the most popular movies available for free.</h2>
+    <p class="fw1 f5 mt0 mb3">Come back often and see what else is new.</p>
   </article>
 )
 class Header extends Component {
@@ -81,9 +71,9 @@ class Header extends Component {
   render() {
     return (
       <div>
-        <div className="flex bg-lightest-blue black" onClick={this.open}>
+        <div className="flex bg-washed-green black" onClick={this.open}>
           <div className="outline w-100 tc">
-            <h1>Pastybay</h1>
+            <Introduction />
           </div>
         </div>
         {this.state.expanded && <Inner toggle={this.props.toggle} showAll={this.props.showAll} />}
@@ -93,7 +83,10 @@ class Header extends Component {
 }
 const StyledButton = ({ onClick, href, children }) => (
   <div className="" onClick={onClick}>
-    <a href={href || '#'} class="no-underline pa3 f6 tc db w-100 bg-animate bg-blue hover-bg-dark-blue white br2">
+    <a
+      href={href || '#'}
+      class="f6 br-pill bg-dark-green no-underline washed-green ba b--dark-green grow pv2 ph3 dib mr3"
+    >
       {children}
     </a>
   </div>
@@ -110,10 +103,10 @@ class Inner extends Component {
 
   render() {
     return (
-      <div className="flex flex-wrap bg-white items-start pa3">
+      <div className="flex flex-wrap bg-washed-green items-start pa3">
         <StyledButton onClick={this.props.toggle}>{this.props.showAll ? 'Only show HD' : 'Show all'}</StyledButton>
         <div className="pa2">
-          <code>Next refresh: {moment(this.state.expires).fromNow()}</code>
+          <div>Next refresh: {moment(this.state.expires).fromNow()}</div>
         </div>
       </div>
     )
@@ -129,10 +122,10 @@ class OuterRow extends Component {
     if (!this.props.movie.title) {
       return (
         <div>
-          <div className="flex bg-lightest-blue black">
+          <div className="flex bg-washed-green black">
             <div className="outline w-100 pa3">
-              <code className="bg-light-blue light-blue">......................</code>
-              <code className="fr bg-light-blue light-blue">....</code>
+              <div className="bg-light-blue light-blue">......................</div>
+              <div className="fr bg-light-blue light-blue">....</div>
             </div>
           </div>
         </div>
@@ -141,13 +134,13 @@ class OuterRow extends Component {
     // console.log(this.props.movie.movieTitle, this.props.movie.uploadedAt)
     return (
       <div>
-        <div className="flex bg-lightest-blue black" onClick={this.open}>
+        <div className="flex bg-washed-green black" onClick={this.open}>
           <div className="outline w-100 pa3">
             <div className="dim">
-              <code>
+              <div className="fl">
                 {this.props.movie.movieTitle} [{moment(this.props.movie.uploadedAt).fromNow()}]
-              </code>
-              <code className="fr">{this.props.movie.hd ? 'HD' : 'CAM'}</code>
+              </div>
+              <div className="fr">{this.props.movie.hd ? 'HD' : 'CAM'}</div>
             </div>
           </div>
         </div>
@@ -159,7 +152,7 @@ class OuterRow extends Component {
 class InnerRow extends Component {
   render() {
     return (
-      <div className="flex flex-wrap bg-white items-start">
+      <div className="flex flex-wrap bg-washed-green items-start">
         <div className="w-1 pa3">
           <Trailer movie={this.props.movie} />
         </div>
