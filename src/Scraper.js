@@ -9,6 +9,19 @@ import { Metadata } from './Metadata'
 
 export class Scraper extends Component {
   state = { movies: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] }
+  fetch = async () => {
+    console.log('loading fresh scrape')
+    const movies = await getPB()
+    // console.log(movies)
+
+    this.setState({
+      movies: sortBy(movies, 'uploadedAt').reverse(),
+      fresh: true,
+    })
+
+    const scrapeKey = 'aggro.pb.201'
+    setExpiry(scrapeKey, movies, 2)
+  }
   async componentWillMount() {
     const scrapeKey = 'aggro.pb.201'
     if (!isExpired(scrapeKey)) {
@@ -19,15 +32,7 @@ export class Scraper extends Component {
       })
       return
     }
-    console.log('loading fresh pb scrape')
-    const movies = await getPB()
-    // console.log(movies)
-
-    this.setState({
-      movies: sortBy(movies, 'uploadedAt').reverse(),
-      fresh: true,
-    })
-    setExpiry(scrapeKey, movies, 2)
+    this.fetch()
   }
 
   render() {
@@ -36,15 +41,15 @@ export class Scraper extends Component {
 }
 
 class FlexTable extends Component {
-  state = { showCAM: true }
-  toggle = () => this.setState(p => ({ showCAM: !p.showCAM }))
+  state = { showAll: true }
+  toggle = () => this.setState(p => ({ showAll: !p.showAll }))
   render() {
     return (
       <div className="pa2 bg-gray">
-        <Header toggle={this.toggle} />
+        <Header toggle={this.toggle} showAll={this.state.showAll} />
         {sortBy(this.props.movies, 'uploadedAt')
           .reverse()
-          .filter(x => this.state.showCAM || x.hd)
+          .filter(x => this.state.showAll || x.hd)
           .map(x => <OuterRow key={shortid.generate()} movie={x} />)}
       </div>
     )
@@ -64,7 +69,7 @@ class Header extends Component {
             <code>Pastybay</code>
           </div>
         </div>
-        {this.state.expanded && <Inner toggle={this.props.toggle} />}
+        {this.state.expanded && <Inner toggle={this.props.toggle} showAll={this.props.showAll} />}
       </div>
     )
   }
@@ -85,8 +90,8 @@ class Inner extends Component {
         <div className="w-1 pa3">
           <code>Next refresh: {moment(this.state.expires).fromNow()}</code>
         </div>
-        <div className="w-1 pa3 grow">
-          <code onClick={this.props.toggle}>Only show HD</code>
+        <div className="w-1 pa2 ma2 grow br-pill white bg-black">
+          <code onClick={this.props.toggle}>{this.props.showAll ? 'Only show HD' : 'Show all'}</code>
         </div>
       </div>
     )

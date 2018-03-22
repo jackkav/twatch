@@ -8,14 +8,16 @@ export class Metadata extends Component {
 
   async componentWillMount() {
     this.setState({ isFetching: true })
-    const { imdbRating, Actors, Metascore, Genre, Plot } = await getOmdb(
+    const { imdbRating, Actors, Metascore, Genre, Plot, Error } = await getOmdb(
       this.props.movie.movieTitle,
       this.props.movie.year
     )
-    this.setState({ isFetching: false, imdbRating, Actors, Metascore, Genre, Plot })
+    if (!Error) this.setState({ isFetching: false, imdbRating, Actors, Metascore, Genre, Plot, Error: null })
+    else this.setState({ isFetching: false, Error })
   }
 
   render() {
+    if (this.state.Error) return <div>{this.state.Error}</div>
     if (!this.state.imdbRating)
       return (
         <div>
@@ -58,7 +60,9 @@ const getOmdb = async (name, year) => {
   let cors = 'https://cors-anywhere.herokuapp.com/'
   let f = await fetch(`${cors}www.omdbapi.com/?apikey=6cf170d0&t=${name}&y=${year}`)
   if (!f.response) {
-    console.log(f.Error, name, year)
+    console.log(f, name, year)
+    if (f.status === 200) return { Error: 'Movie not found' }
+    if (f.status === 404) return { Error: 'Omdb is down' }
   }
   let json = await f.json()
   // console.log('l', json)
