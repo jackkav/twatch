@@ -65,8 +65,8 @@ class Header extends Component {
     return (
       <div>
         <div className="flex bg-lightest-blue black" onClick={this.open}>
-          <div className="outline w-100 pa3 tc">
-            <code>Pastybay</code>
+          <div className="outline w-100 tc">
+            <h1>Pastybay</h1>
           </div>
         </div>
         {this.state.expanded && <Inner toggle={this.props.toggle} showAll={this.props.showAll} />}
@@ -74,6 +74,13 @@ class Header extends Component {
     )
   }
 }
+const StyledButton = ({ onClick, href, children }) => (
+  <div className="" onClick={onClick}>
+    <a href={href || '#'} class="no-underline pa3 f6 tc db w-100 bg-animate bg-blue hover-bg-dark-blue white br2">
+      {children}
+    </a>
+  </div>
+)
 class Inner extends Component {
   state = { last: null }
   componentWillMount() {
@@ -86,12 +93,10 @@ class Inner extends Component {
 
   render() {
     return (
-      <div className="flex flex-wrap bg-white items-start">
-        <div className="w-1 pa3">
+      <div className="flex flex-wrap bg-white items-start pa3">
+        <StyledButton onClick={this.props.toggle}>{this.props.showAll ? 'Only show HD' : 'Show all'}</StyledButton>
+        <div className="pa2">
           <code>Next refresh: {moment(this.state.expires).fromNow()}</code>
-        </div>
-        <div className="w-1 pa2 ma2 grow br-pill white bg-black">
-          <code onClick={this.props.toggle}>{this.props.showAll ? 'Only show HD' : 'Show all'}</code>
         </div>
       </div>
     )
@@ -138,18 +143,16 @@ class InnerRow extends Component {
   render() {
     return (
       <div className="flex flex-wrap bg-white items-start">
-        <div className=" w-1 pa3">
+        <div className="w-1 pa3">
           <Trailer movie={this.props.movie} />
         </div>
-        <div className=" w-1 pa3">
+        <div className="w-1 pa3">
           <div>Name: {this.props.movie.title}</div>
           <div>Released: {moment(this.props.movie.uploadedAt).fromNow()}</div>
           <div>Position: #{this.props.movie.index + 1}</div>
           <div>Quality: {this.props.movie.quality}</div>
           <div>Size: {this.props.movie.size}</div>
-          <div>
-            Download: <a href={this.props.movie.magnet}>Here</a>
-          </div>
+          <StyledButton href={this.props.movie.magnet}>Download</StyledButton>
         </div>
         <div className=" w-1 pa3">
           <Metadata movie={this.props.movie} />

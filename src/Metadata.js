@@ -17,7 +17,16 @@ export class Metadata extends Component {
   }
 
   render() {
-    if (this.state.Error) return <div>{this.state.Error}</div>
+    if (this.state.Error)
+      return (
+        <div class="flex w-100 items-center justify-center pa4 bg-lightest-blue navy">
+          <svg class="w1" data-icon="info" viewBox="0 0 32 32">
+            <title>info icon</title>
+            <path d="M16 0 A16 16 0 0 1 16 32 A16 16 0 0 1 16 0 M19 15 L13 15 L13 26 L19 26 z M16 6 A3 3 0 0 0 16 12 A3 3 0 0 0 16 6" />
+          </svg>
+          <span class="lh-title ml3">{this.state.Error}</span>
+        </div>
+      )
     if (!this.state.imdbRating)
       return (
         <div>
@@ -32,15 +41,11 @@ export class Metadata extends Component {
           </div>
           <div>
             Actors:
-            <code className="bg-light-gray light-gray">
-              Jason Bateman, Rachel McAdams, Kyle Chandler, Sharon Horgan
-            </code>
+            <code className="bg-light-gray light-gray">...............................</code>
           </div>
           <div>
             Plot:
-            <code className="bg-light-gray light-gray">
-              A group of friends who meet regularly for game nights find themselves trying to solve a murder mystery.
-            </code>
+            <code className="bg-light-gray light-gray">.....................</code>
           </div>
         </div>
       )
@@ -59,12 +64,8 @@ export class Metadata extends Component {
 const getOmdb = async (name, year) => {
   let cors = 'https://cors-anywhere.herokuapp.com/'
   let f = await fetch(`${cors}www.omdbapi.com/?apikey=6cf170d0&t=${name}&y=${year}`)
-  if (!f.response) {
-    console.log(f, name, year)
-    if (f.status === 200) return { Error: 'Movie not found' }
-    if (f.status === 404) return { Error: 'Omdb is down' }
-  }
+  if (f.status === 404) return { Error: 'Omdb is down' }
   let json = await f.json()
-  // console.log('l', json)
+  console.log('l', json)
   return json
 }
