@@ -30,16 +30,16 @@ export class Metadata extends Component {
     if (!this.state.imdbRating) return <ReactLoading type="bars" color="#000" />
     return (
       <div>
-        <div>IMDB: {this.state.imdbRating}</div>
-        <div>Metascore: {this.state.Metascore}</div>
-        <div>Genre: {this.state.Genre}</div>
-        <div>Actors: {this.state.Actors}</div>
-        <div>Plot: {this.state.Plot}</div>
+        <LabelRow>IMDB: {this.state.imdbRating}</LabelRow>
+        <LabelRow>Metascore: {this.state.Metascore}</LabelRow>
+        <LabelRow>Genre: {this.state.Genre}</LabelRow>
+        <LabelRow>Actors: {this.state.Actors}</LabelRow>
+        <LabelRow>Plot: {this.state.Plot}</LabelRow>
       </div>
     )
   }
 }
-
+const LabelRow = ({ children }) => <div className="pa1">{children}</div>
 const getOmdb = async (name, year) => {
   let cors = 'https://cors-anywhere.herokuapp.com/'
   let f = await fetch(`${cors}www.omdbapi.com/?apikey=6cf170d0&t=${name}&y=${year}`)

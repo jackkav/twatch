@@ -4586,6 +4586,10 @@ mkdirp@0.5.1, mkdirp@0.5.x, "mkdirp@>=0.5 0", mkdirp@^0.5.1, mkdirp@~0.5.0, mkdi
   dependencies:
     minimist "0.0.8"
 
+moment-from-now@^0.0.4:
+  version "0.0.4"
+  resolved "https://registry.npmjs.org/moment-from-now/-/moment-from-now-0.0.4.tgz#cdc97f0fe16f14ad0756be7686072ec27b8d860a"
+
 moment@^2.21.0:
   version "2.21.0"
   resolved "https://registry.npmjs.org/moment/-/moment-2.21.0.tgz#2a114b51d2a6ec9e6d83cf803f838a878d8a023a"
@@ -6638,6 +6642,10 @@ table@^4.0.1:
     lodash "^4.17.4"
     slice-ansi "1.0.0"
     string-width "^2.1.1"
+
+tachyons-components@^1.0.0-1:
+  version "1.0.0-1"
+  resolved "https://registry.npmjs.org/tachyons-components/-/tachyons-components-1.0.0-1.tgz#2a82263151552ac1e64f3607b71a05e278f78538"
 
 tachyons@^4.9.1:
   version "4.9.1"

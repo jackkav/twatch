@@ -4,6 +4,7 @@ import { pbParse } from './parsers'
 import { sortBy } from 'lodash'
 import cheerio from 'cheerio'
 import moment from 'moment'
+import fromNow from 'moment-from-now'
 import { Trailer } from './Trailer'
 import { Metadata } from './Metadata'
 
@@ -81,6 +82,7 @@ class Header extends Component {
     )
   }
 }
+
 const StyledButton = ({ onClick, href, children }) => (
   <div className="" onClick={onClick}>
     <a
@@ -106,7 +108,7 @@ class Inner extends Component {
       <div className="flex flex-wrap bg-washed-green items-start pa3">
         <StyledButton onClick={this.props.toggle}>{this.props.showAll ? 'Only show HD' : 'Show all'}</StyledButton>
         <div className="pa2">
-          <div>Next refresh: {moment(this.state.expires).fromNow()}</div>
+          <div>Next refresh: {fromNow(this.state.expires)}</div>
         </div>
       </div>
     )
@@ -124,21 +126,22 @@ class OuterRow extends Component {
         <div>
           <div className="flex bg-washed-green black">
             <div className="outline w-100 pa3">
-              <div className="bg-light-blue light-blue">......................</div>
-              <div className="fr bg-light-blue light-blue">....</div>
+              <div className="fl bg-dark-green dark-green">.......................................</div>
+              <div className="fr bg-dark-green dark-green">....</div>
             </div>
           </div>
         </div>
       )
     }
     // console.log(this.props.movie.movieTitle, this.props.movie.uploadedAt)
+    const selected = this.state.expanded ? 'bg-dark-green white' : 'bg-washed-green black'
     return (
       <div>
-        <div className="flex bg-washed-green black" onClick={this.open}>
+        <div className={'flex ' + selected} onClick={this.open}>
           <div className="outline w-100 pa3">
             <div className="dim">
               <div className="fl">
-                {this.props.movie.movieTitle} [{moment(this.props.movie.uploadedAt).fromNow()}]
+                {this.props.movie.movieTitle} [{fromNow(this.props.movie.uploadedAt)}]
               </div>
               <div className="fr">{this.props.movie.hd ? 'HD' : 'CAM'}</div>
             </div>
@@ -149,20 +152,21 @@ class OuterRow extends Component {
     )
   }
 }
+const LabelRow = ({ children }) => <div className="pa1">{children}</div>
 class InnerRow extends Component {
   render() {
     return (
       <div className="flex flex-wrap bg-washed-green items-start">
         <div className="w-1 pa3">
-          <Trailer movie={this.props.movie} />
+          <LabelRow>Name: {this.props.movie.title}</LabelRow>
+          <LabelRow>Released: {fromNow(this.props.movie.uploadedAt)}</LabelRow>
+          <LabelRow>Position: #{this.props.movie.index + 1}</LabelRow>
+          <LabelRow>Quality: {this.props.movie.quality}</LabelRow>
+          <LabelRow>Size: {this.props.movie.size}</LabelRow>
+          <StyledButton href={this.props.movie.magnet}>Download</StyledButton>
         </div>
         <div className="w-1 pa3">
-          <div>Name: {this.props.movie.title}</div>
-          <div>Released: {moment(this.props.movie.uploadedAt).fromNow()}</div>
-          <div>Position: #{this.props.movie.index + 1}</div>
-          <div>Quality: {this.props.movie.quality}</div>
-          <div>Size: {this.props.movie.size}</div>
-          <StyledButton href={this.props.movie.magnet}>Download</StyledButton>
+          <Trailer movie={this.props.movie} />
         </div>
         <div className=" w-1 pa3">
           <Metadata movie={this.props.movie} />
