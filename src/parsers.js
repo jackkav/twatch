@@ -1,5 +1,8 @@
 import moment from 'moment'
 
+// Tomb Raider 2018 NEW 720p HD-TS 1GB - Makintos13
+// movieTitle year Quality Size
+
 export const pbParse = input => {
   if (!input) return false
   const size =
@@ -23,6 +26,7 @@ export const pbParse = input => {
     input.match(/TSRip/i) ||
     input.match(/HDTS/i) ||
     input.match(/HD TS/i) ||
+    input.match(/TS/i) ||
     input.match(/HD TC/i)
   const lowQuality =
     input.match(/HDCAM/i) ||
@@ -32,6 +36,7 @@ export const pbParse = input => {
     input.match(/TSRip/i) ||
     input.match(/HDTS/i) ||
     input.match(/HD TS/i) ||
+    input.match(/TS/i) ||
     input.match(/HD TC/i)
 
   const quality = r ? r.toString() : 'N/A'
