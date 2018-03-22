@@ -27,7 +27,7 @@ export class Scraper extends Component {
       movies: sortBy(movies, 'uploadedAt').reverse(),
       fresh: true,
     })
-    setExpiry(scrapeKey, movies, 3)
+    setExpiry(scrapeKey, movies, 2)
   }
 
   render() {
@@ -111,13 +111,15 @@ class OuterRow extends Component {
         </div>
       )
     }
-    console.log(this.props.movie.movieTitle, this.props.movie.uploadedAt)
+    // console.log(this.props.movie.movieTitle, this.props.movie.uploadedAt)
     return (
       <div>
         <div className="flex bg-lightest-blue black" onClick={this.open}>
           <div className="outline w-100 pa3">
-            <div className="grow">
-              <code>{this.props.movie.movieTitle}</code>
+            <div className="dim">
+              <code>
+                {this.props.movie.movieTitle} [{moment(this.props.movie.uploadedAt).fromNow()}]
+              </code>
               <code className="fr">{this.props.movie.hd ? 'HD' : 'CAM'}</code>
             </div>
           </div>

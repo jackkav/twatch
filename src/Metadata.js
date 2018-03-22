@@ -55,12 +55,12 @@ export class Metadata extends Component {
 }
 
 const getOmdb = async (name, year) => {
-  const url = `http://www.omdbapi.com/?apikey=6cf170d0&t=${name}&y=${year}`
-  let f = await fetch(url)
+  let cors = 'https://cors-anywhere.herokuapp.com/'
+  let f = await fetch(`${cors}www.omdbapi.com/?apikey=6cf170d0&t=${name}&y=${year}`)
   if (!f.response) {
     console.log(f.Error, name, year)
   }
   let json = await f.json()
-  console.log('l', json)
+  // console.log('l', json)
   return json
 }
