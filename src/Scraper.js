@@ -42,16 +42,17 @@ export class Scraper extends Component {
 }
 
 class Main extends Component {
-  state = { showAll: true }
+  state = { showAll: true, locked: true }
   toggle = () => this.setState(p => ({ showAll: !p.showAll }))
+  unlock = () => this.setState({ locked: false })
   render() {
     return (
       <div className="pa2 bg-gray avenir">
-        <Header toggle={this.toggle} showAll={this.state.showAll} />
+        <Header toggle={this.toggle} unlock={this.unlock} locked={this.state.locked} showAll={this.state.showAll} />
         {sortBy(this.props.movies, 'uploadedAt')
           .reverse()
           .filter(x => this.state.showAll || x.hd)
-          .map(x => <OuterRow key={shortid.generate()} movie={x} />)}
+          .map(x => <OuterRow key={shortid.generate()} movie={x} locked={this.state.locked} />)}
       </div>
     )
   }
@@ -77,7 +78,9 @@ class Header extends Component {
             <Introduction />
           </div>
         </div>
-        {this.state.expanded && <Inner toggle={this.props.toggle} showAll={this.props.showAll} />}
+        {this.state.expanded && (
+          <Inner toggle={this.props.toggle} showAll={this.props.showAll} unlock={this.props.unlock} />
+        )}
       </div>
     )
   }
@@ -107,6 +110,7 @@ class Inner extends Component {
     return (
       <div className="flex flex-wrap bg-washed-green items-start pa3">
         <StyledButton onClick={this.props.toggle}>{this.props.showAll ? 'Only show HD' : 'Show all'}</StyledButton>
+        <StyledButton onClick={this.props.unlock}>Don't Press This Button</StyledButton>
         <div className="pa2">
           <div>Next refresh: {fromNow(this.state.expires)}</div>
         </div>
@@ -147,7 +151,7 @@ class OuterRow extends Component {
             </div>
           </div>
         </div>
-        {this.state.expanded && <InnerRow movie={this.props.movie} />}
+        {this.state.expanded && <InnerRow movie={this.props.movie} locked={this.props.locked} />}
       </div>
     )
   }
@@ -157,14 +161,16 @@ class InnerRow extends Component {
   render() {
     return (
       <div className="flex flex-wrap bg-washed-green items-start">
-        <div className="w-1 pa3">
-          <LabelRow>Name: {this.props.movie.title}</LabelRow>
-          <LabelRow>Released: {fromNow(this.props.movie.uploadedAt)}</LabelRow>
-          <LabelRow>Position: #{this.props.movie.index + 1}</LabelRow>
-          <LabelRow>Quality: {this.props.movie.quality}</LabelRow>
-          <LabelRow>Size: {this.props.movie.size}</LabelRow>
-          <StyledButton href={this.props.movie.magnet}>Download</StyledButton>
-        </div>
+        {!this.props.locked && (
+          <div className="w-1 pa3">
+            <LabelRow>Name: {this.props.movie.title}</LabelRow>
+            <LabelRow>Released: {fromNow(this.props.movie.uploadedAt)}</LabelRow>
+            <LabelRow>Position: #{this.props.movie.index + 1}</LabelRow>
+            <LabelRow>Quality: {this.props.movie.quality}</LabelRow>
+            <LabelRow>Size: {this.props.movie.size}</LabelRow>
+            <StyledButton href={this.props.movie.magnet}>Download</StyledButton>
+          </div>
+        )}
         <div className="w-1 pa3">
           <Trailer movie={this.props.movie} />
         </div>
