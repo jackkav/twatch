@@ -183,9 +183,9 @@ class InnerRow extends Component {
 
 const getPB = async () => {
   let cors = 'https://cors-anywhere.herokuapp.com/'
-  let f = await fetch(cors + 'thepiratebay.org/top/201')
+  let f = await fetch(cors + 'thepiratebay.rocks/top/201')
   console.log(f.status)
-  if (f.status === 404) f = await fetch(cors + 'thepiratebay.rocks/top/201')
+  if (f.status !== 200) f = await fetch(cors + 'thepiratebay.org/top/201')
   if (!f.ok) {
     return
   }
@@ -205,7 +205,7 @@ const getPB = async () => {
       .parent()
       .find('.detName a')
     if (url1.length) url = url1[0].attribs.href
-    else console.log('hmm', item)
+    // else console.log('hmm', item)
     const id = magnet.match(/(?![magnet:?xt=urn:btih:])(.*)(?=&dn)/)[0]
     const p = pbParse(fullTag)
     const newItem = {
