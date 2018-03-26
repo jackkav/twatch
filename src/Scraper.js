@@ -7,6 +7,9 @@ import fromNow from 'moment-from-now'
 import { Trailer } from './Trailer'
 import { Metadata } from './Metadata'
 
+const parse5 = require('parse5')
+var htmlparser = require('htmlparser2')
+const jsdom = require('jsdom')
 export class Scraper extends Component {
   state = { movies: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] }
   fetch = async () => {
@@ -185,6 +188,8 @@ const getPB = async () => {
   let cors = 'https://cors-anywhere.herokuapp.com/'
   let f = await fetch(cors + 'thepiratebay.rocks/top/201')
   console.log(f.status)
+  if (f.status !== 200) f = await fetch(cors + 'pirateproxy.sh/top/201')
+  if (f.status !== 200) f = await fetch(cors + 'thepiratebay.red/top/201')
   if (f.status !== 200) f = await fetch(cors + 'thepiratebay.org/top/201')
   if (!f.ok) {
     return
