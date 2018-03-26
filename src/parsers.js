@@ -1,8 +1,3 @@
-import moment from 'moment'
-
-// Tomb Raider 2018 NEW 720p HD-TS 1GB - Makintos13
-// movieTitle year Quality Size
-
 export const pbParse = input => {
   if (!input) return false
   const size =
@@ -77,7 +72,7 @@ export const pbParse = input => {
     .replace(/\./g, ' ')
     .replace(/\n/g, '')
     .replace(/\t/g, '')
-  const uploadedAt = parseLooseDate(uploadedAtTime).toISOString()
+  const uploadedAt = parseLooseDate(uploadedAtTime)
 
   return {
     quality,
@@ -92,10 +87,11 @@ export const pbParse = input => {
 }
 
 const parseLooseDate = uploadedAt => {
-  let timeSinceRelease
-  if (uploadedAt.includes('Today')) timeSinceRelease = moment()
-  else if (uploadedAt.includes('Y-day')) timeSinceRelease = moment().subtract(1, 'day')
-  else if (uploadedAt.includes(':')) timeSinceRelease = moment(uploadedAt, 'MM-DD HH:SS')
-  else timeSinceRelease = moment(uploadedAt, 'MM-DD YYYY')
-  return timeSinceRelease
+  console.log(uploadedAt)
+  const today = new Date()
+  if (uploadedAt.includes('Today')) return new Date().toISOString()
+  else if (uploadedAt.includes('Y-day')) return new Date(today.setDate(today.getDate() - 1)).toISOString()
+  else if (uploadedAt.includes(':'))
+    return new Date(today.getUTCFullYear() + '-' + uploadedAt.replace(' ', 'T')).toISOString()
+  else return new Date(uploadedAt.split(' ')[1] + '-' + uploadedAt.split(' ')[0]).toISOString()
 }

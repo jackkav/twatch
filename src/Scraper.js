@@ -1,9 +1,8 @@
 import React, { Component } from 'react'
 import shortid from 'shortid'
 import { pbParse } from './parsers'
-import { sortBy } from 'lodash'
+import sortBy from 'lodash/sortBy'
 import cheerio from 'cheerio'
-import moment from 'moment'
 import fromNow from 'moment-from-now'
 import { Trailer } from './Trailer'
 import { Metadata } from './Metadata'
@@ -58,10 +57,10 @@ class Main extends Component {
   }
 }
 const Introduction = () => (
-  <article class="mw7 center ph3 ph5-ns tc br2 pv5 bg-washed-green dark-green mb5">
-    <h1 class="fw6 f3 f2-ns lh-title mt0 mb3">Welcome</h1>
-    <h2 class="fw2 f4 lh-copy mt0 mb3">The following is a list of the most popular content out right now.</h2>
-    <p class="fw1 f5 mt0 mb3">Come back often and see what else is new.</p>
+  <article className="mw7 center ph3 ph5-ns tc br2 pv5 bg-washed-green dark-green mb5">
+    <h1 className="fw6 f3 f2-ns lh-title mt0 mb3">Welcome</h1>
+    <h2 className="fw2 f4 lh-copy mt0 mb3">The following is a list of the most popular content out right now.</h2>
+    <p className="fw1 f5 mt0 mb3">Come back often and see what else is new.</p>
   </article>
 )
 class Header extends Component {
@@ -184,8 +183,9 @@ class InnerRow extends Component {
 
 const getPB = async () => {
   let cors = 'https://cors-anywhere.herokuapp.com/'
-  let f = await fetch(cors + 'thepiratebay.rocks/top/201')
-  if (f.status === 404) f = await fetch(cors + 'thepiratebay.org/top/201')
+  let f = await fetch(cors + 'thepiratebay.org/top/201')
+  console.log(f.status)
+  if (f.status === 404) f = await fetch(cors + 'thepiratebay.rocks/top/201')
   if (!f.ok) {
     return
   }
@@ -195,13 +195,17 @@ const getPB = async () => {
   const s = []
   let index = 0
   $('a[title="Download this torrent using magnet"]').each((a, item) => {
+    // console.log(item)
     const magnet = item.attribs.href
     const fullTag = $(item)
       .parent()
       .text()
-    const url = $(item)
+    let url = ''
+    const url1 = $(item)
       .parent()
-      .find('.detName a')[0].attribs.href
+      .find('.detName a')
+    if (url1.length) url = url1[0].attribs.href
+    else console.log('hmm', item)
     const id = magnet.match(/(?![magnet:?xt=urn:btih:])(.*)(?=&dn)/)[0]
     const p = pbParse(fullTag)
     const newItem = {
@@ -217,18 +221,17 @@ const getPB = async () => {
   return s
 }
 export const setExpiry = (key, value, hours = 1) => {
-  localStorage.setItem(
-    key + '.lastScrape',
-    moment()
-      .add(hours, 'hour')
-      .format()
-  )
+  let today = new Date()
+  today.setHours(today.getHours() + hours)
+  localStorage.setItem(key + '.lastScrape', today.toISOString())
   localStorage.setItem(key, JSON.stringify(value))
 }
 export const isExpired = key => {
   const expire = localStorage.getItem(key + '.lastScrape')
   const value = localStorage.getItem(key)
   if (!expire || !value) return true
-  console.log(key + ' has Expired', moment().isAfter(expire))
-  return moment().isAfter(expire)
+  const expiryTime = new Date(expire)
+  let today = new Date()
+  console.log(key + ' has Expired', today > expiryTime)
+  return today > expiryTime
 }
