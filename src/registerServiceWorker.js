@@ -108,3 +108,15 @@ export function unregister() {
     })
   }
 }
+// Check to see if the service worker controlling the page at initial load
+// has become redundant, since this implies there's a new service worker with
+// fresh content.
+if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+  navigator.serviceWorker.controller.onstatechange = function(e) {
+    if (e.target.state === 'redundant') {
+      console.log('New or updated content is available.')
+      const update = confirm('Would you like to update to the latest version?')
+      if (update) window.location.reload()
+    }
+  }
+}
