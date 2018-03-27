@@ -115,6 +115,7 @@ if (navigator.serviceWorker && navigator.serviceWorker.controller) {
   navigator.serviceWorker.controller.onstatechange = function(e) {
     if (e.target.state === 'redundant') {
       console.log('New or updated content is available.')
+      /* eslint no-restricted-globals: "off"*/
       const update = confirm('Would you like to update to the latest version?')
       if (update) window.location.reload()
     }

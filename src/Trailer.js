@@ -13,20 +13,32 @@ export class Trailer extends Component {
   }
 
   render() {
-    if (this.state.isFetching) return <ReactLoading type="bars" color="#000" />
+    if (this.state.isFetching)
+      return (
+        <div className="bg-black" style={{ width: 240, height: 180 }}>
+          <ReactLoading type="bars" color="#FFF" />
+        </div>
+      )
     return (
-      <a target="blank" href={this.state.watch}>
-        <img src={this.state.icon} alt="yt" width="240" height="180" />
-      </a>
+      <div className="bg-black" style={{ width: 240, height: 180 }}>
+        <a target="blank" href={this.state.watch}>
+          <img src={this.state.icon} alt="yt" width="240" height="180" />
+        </a>
+      </div>
     )
   }
 }
 const getTrailer = async (name, year) => {
   const searchTerm = name + ' ' + year + ' trailer'
-  const url = `https://www.googleapis.com/youtube/v3/search?key=AIzaSyBjnMTlF9ou968qeDBc6LQpN860jJ0Juj0&q=${searchTerm}&part=snippet`
-  let f = await fetch(url)
+  let cors = 'https://cors-anywhere.herokuapp.com/'
+  let f = await fetch(
+    `${cors}https://www.googleapis.com/youtube/v3/search?key=AIzaSyBjnMTlF9ou968qeDBc6LQpN860jJ0Juj0&q=${searchTerm}&part=snippet`
+  )
+  // console.log(f)
   let json = await f.json()
-  const first = json.items[0]
+  const items = get(json, 'items')
+  let first = {}
+  if (items.length) first = items[0]
   return {
     icon: get(first, 'snippet.thumbnails.default.url', 'https://i.ytimg.com/vi/dQw4w9WgXcQ/default.jpg'),
     watch: `https://www.youtube.com/watch?v=${get(first, 'id.videoId', 'dQw4w9WgXcQ')}`,
