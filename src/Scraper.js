@@ -124,25 +124,29 @@ class OuterRow extends Component {
   open = () => this.setState(p => ({ expanded: !p.expanded }))
 
   render() {
-    if (!this.props.movie.title) {
+    if (!this.props.movie.title)
       return (
         <div>
           <div className="flex bg-washed-green black">
             <div className="outline w-100 pa3">
-              <div className="fl bg-dark-green dark-green">.......................................</div>
-              <div className="fr bg-dark-green dark-green">....</div>
+              <div className="fl bg-light-gray light-gray br2">
+                ........... .............. ................ ..........
+              </div>
+              <div className="fr bg-light-gray light-gray br2">........</div>
             </div>
           </div>
         </div>
       )
-    }
+
     // console.log(this.props.movie.movieTitle, this.props.movie.uploadedAt)
-    const selected = this.state.expanded ? 'bg-dark-green white' : 'bg-washed-green black'
+    const selected = this.state.expanded
+      ? 'bg-dark-green white '
+      : 'bg-washed-green black bg-animate hover-bg-dark-green hover-white'
     return (
       <div>
         <div className={'flex ' + selected} onClick={this.open}>
           <div className="outline w-100 pa3">
-            <div className="dim">
+            <div className="bg-animate hover-bg-dark-green">
               <div className="fl">
                 {this.props.movie.movieTitle} [{fromNow(this.props.movie.uploadedAt)}]
               </div>

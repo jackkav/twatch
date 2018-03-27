@@ -15,7 +15,7 @@ export class Trailer extends Component {
   render() {
     if (this.state.isFetching)
       return (
-        <div className="bg-black" style={{ width: 240, height: 180 }}>
+        <div className="bg-black flex justify-center items-center" style={{ width: 240, height: 180 }}>
           <ReactLoading type="bars" color="#FFF" />
         </div>
       )
