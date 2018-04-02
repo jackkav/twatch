@@ -41,7 +41,7 @@ export class Scraper extends Component {
 }
 
 class Main extends Component {
-  state = { showAll: true, locked: true }
+  state = { showAll: false, locked: true }
   toggle = () => this.setState(p => ({ showAll: !p.showAll }))
   unlock = () => this.setState({ locked: false })
   render() {
@@ -150,7 +150,7 @@ class OuterRow extends Component {
               <div className="fl">
                 {this.props.movie.movieTitle} [{fromNow(this.props.movie.uploadedAt)}]
               </div>
-              <div className="fr">{this.props.movie.hd ? 'HD' : 'CAM'}</div>
+              {this.props.locked || <div className="fr">{this.props.movie.hd ? 'HD' : 'CAM'}</div>}
             </div>
           </div>
         </div>
