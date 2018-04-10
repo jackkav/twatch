@@ -43,7 +43,13 @@ export class Scraper extends Component {
 class Main extends Component {
   state = { showAll: false, locked: true }
   toggle = () => this.setState(p => ({ showAll: !p.showAll }))
-  unlock = () => this.setState({ locked: false })
+  unlock = () => {
+    this.setState({ locked: false })
+    localStorage.setItem('unlocked', 'true')
+  }
+  componentWillMount() {
+    if (localStorage.getItem('unlocked')) this.setState({ locked: false })
+  }
   render() {
     return (
       <div className="pa2 bg-gray avenir">
