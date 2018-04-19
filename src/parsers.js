@@ -14,6 +14,7 @@ export const pbParse = input => {
     input.match(/DVDRip/i) ||
     input.match(/DVDScr/i) ||
     input.match(/WED-DL/i) ||
+    input.match(/CAM/i) ||
     input.match(/HDCAM/i) ||
     input.match(/HD CAM/i) ||
     input.match(/HD-TS/i) ||
@@ -24,6 +25,7 @@ export const pbParse = input => {
     input.match(/TS/i) ||
     input.match(/HD TC/i)
   const lowQuality =
+    input.match(/CAM/i) ||
     input.match(/HDCAM/i) ||
     input.match(/HD CAM/i) ||
     input.match(/HD-TS/i) ||
