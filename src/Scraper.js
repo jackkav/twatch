@@ -54,10 +54,12 @@ class Main extends Component {
     return (
       <div className="pa2 bg-gray avenir">
         <Header toggle={this.toggle} unlock={this.unlock} locked={this.state.locked} showAll={this.state.showAll} />
-        {sortBy(this.props.movies, 'uploadedAt')
-          .reverse()
-          .filter(x => this.state.showAll || x.hd)
-          .map(x => <OuterRow key={shortid.generate()} movie={x} locked={this.state.locked} />)}
+        {this.props.movies[0] === 1
+          ? this.props.movies.map(x => <ListElementSkeleton />)
+          : sortBy(this.props.movies, 'uploadedAt')
+              .reverse()
+              .filter(x => this.state.showAll || x.hd)
+              .map(x => <ListElement key={shortid.generate()} movie={x} locked={this.state.locked} />)}
       </div>
     )
   }
@@ -84,7 +86,7 @@ class Header extends Component {
           </div>
         </div>
         {this.state.expanded && (
-          <Inner toggle={this.props.toggle} showAll={this.props.showAll} unlock={this.props.unlock} />
+          <HeaderMenu toggle={this.props.toggle} showAll={this.props.showAll} unlock={this.props.unlock} />
         )}
       </div>
     )
@@ -101,7 +103,7 @@ const StyledButton = ({ onClick, href, children }) => (
     </a>
   </div>
 )
-class Inner extends Component {
+class HeaderMenu extends Component {
   state = { last: null }
   componentWillMount() {
     const scrapeKey = 'aggro.pb.201.lastScrape'
@@ -117,34 +119,30 @@ class Inner extends Component {
         <StyledButton onClick={this.props.toggle}>{this.props.showAll ? 'Only show HD' : 'Show all'}</StyledButton>
         <StyledButton onClick={this.props.unlock}>Don't Press This Button</StyledButton>
         <div className="pa2">
-          <div>Next refresh: {fromNow(this.state.expires)}</div>
+          <div>Cache expires: {fromNow(this.state.expires)}</div>
         </div>
       </div>
     )
   }
 }
-class OuterRow extends Component {
+const ListElementSkeleton = () => (
+  <div>
+    <div className="flex bg-washed-green black">
+      <div className="outline w-100 pa3">
+        <div className="fl bg-light-gray light-gray br2">........... .............. ................ ..........</div>
+        <div className="fr bg-light-gray light-gray br2">........</div>
+      </div>
+    </div>
+  </div>
+)
+
+class ListElement extends Component {
   state = {
     expanded: false,
   }
   open = () => this.setState(p => ({ expanded: !p.expanded }))
 
   render() {
-    if (!this.props.movie.title)
-      return (
-        <div>
-          <div className="flex bg-washed-green black">
-            <div className="outline w-100 pa3">
-              <div className="fl bg-light-gray light-gray br2">
-                ........... .............. ................ ..........
-              </div>
-              <div className="fr bg-light-gray light-gray br2">........</div>
-            </div>
-          </div>
-        </div>
-      )
-
-    // console.log(this.props.movie.movieTitle, this.props.movie.uploadedAt)
     const selected = this.state.expanded
       ? 'bg-dark-green white '
       : 'bg-washed-green black bg-animate hover-bg-dark-green hover-white'
