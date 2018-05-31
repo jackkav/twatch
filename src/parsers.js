@@ -89,7 +89,7 @@ export const pbParse = input => {
 }
 
 const parseLooseDate = uploadedAt => {
-  console.log(uploadedAt)
+  // console.log(uploadedAt)
   const today = new Date()
   if (uploadedAt.includes('Today')) return new Date().toISOString()
   else if (uploadedAt.includes('Y-day')) return new Date(today.setDate(today.getDate() - 1)).toISOString()

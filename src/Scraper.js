@@ -55,7 +55,7 @@ class Main extends Component {
       <div className="pa2 bg-gray avenir">
         <Header toggle={this.toggle} unlock={this.unlock} locked={this.state.locked} showAll={this.state.showAll} />
         {this.props.movies[0] === 1
-          ? this.props.movies.map(x => <ListElementSkeleton />)
+          ? this.props.movies.map(x => <ListElementSkeleton key={shortid.generate()} />)
           : sortBy(this.props.movies, 'uploadedAt')
               .reverse()
               .filter(x => this.state.showAll || x.hd)
@@ -93,7 +93,7 @@ class Header extends Component {
   }
 }
 
-const StyledButton = ({ onClick, href, children }) => (
+export const StyledButton = ({ onClick, href, children }) => (
   <div className="" onClick={onClick}>
     <a
       href={href || '#'}

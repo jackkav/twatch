@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import ReactLoading from 'react-loading'
+import { StyledButton } from './Scraper'
 export class Metadata extends Component {
   state = {
     isFetching: false,
@@ -8,11 +9,11 @@ export class Metadata extends Component {
 
   async componentWillMount() {
     this.setState({ isFetching: true })
-    const { imdbRating, Actors, Metascore, Genre, Plot, Error } = await getOmdb(
+    const { imdbRating, imdbID, Actors, Metascore, Genre, Plot, Error } = await getOmdb(
       this.props.movie.movieTitle,
       this.props.movie.year
     )
-    if (!Error) this.setState({ isFetching: false, imdbRating, Actors, Metascore, Genre, Plot, Error: null })
+    if (!Error) this.setState({ isFetching: false, imdbRating, imdbID, Actors, Metascore, Genre, Plot, Error: null })
     else this.setState({ isFetching: false, Error })
   }
 
@@ -30,7 +31,9 @@ export class Metadata extends Component {
     if (!this.state.imdbRating) return <ReactLoading type="bars" color="#000" />
     return (
       <div>
-        <LabelRow>IMDB: {this.state.imdbRating}</LabelRow>
+        <StyledButton href={'https://www.imdb.com/title/' + this.state.imdbID}>
+          IMDB: {this.state.imdbRating}
+        </StyledButton>
         <LabelRow>Metascore: {this.state.Metascore}</LabelRow>
         <LabelRow>Genre: {this.state.Genre}</LabelRow>
         <LabelRow>Actors: {this.state.Actors}</LabelRow>
