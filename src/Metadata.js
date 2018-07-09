@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import ReactLoading from 'react-loading'
-import { StyledButton } from './Scraper'
+import { StyledButton } from './components'
 export class Metadata extends Component {
   state = {
     isFetching: false,

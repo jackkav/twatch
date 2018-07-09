@@ -6,7 +6,7 @@ import cheerio from 'cheerio'
 import fromNow from 'moment-from-now'
 import { Trailer } from './Trailer'
 import { Metadata } from './Metadata'
-
+import { Introduction, StyledButton } from './components'
 export class Scraper extends Component {
   state = { movies: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] }
   fetch = async () => {
@@ -64,13 +64,7 @@ class Main extends Component {
     )
   }
 }
-const Introduction = () => (
-  <article className="mw7 center ph3 ph5-ns tc br2 pv5 bg-washed-green dark-green">
-    <h1 className="fw6 f3 f2-ns lh-title mt0 mb3">Welcome</h1>
-    <h2 className="fw2 f4 lh-copy mt0 mb3">The following is a list of the most popular content out right now.</h2>
-    <p className="fw1 f5 mt0 mb3">Come back often and see what else is new.</p>
-  </article>
-)
+
 class Header extends Component {
   state = {
     expanded: false,
@@ -93,16 +87,6 @@ class Header extends Component {
   }
 }
 
-export const StyledButton = ({ onClick, href, children }) => (
-  <div className="" onClick={onClick}>
-    <a
-      href={href || '#'}
-      className="f6 br-pill bg-dark-green no-underline washed-green ba b--dark-green grow pv2 ph3 dib mr3"
-    >
-      {children}
-    </a>
-  </div>
-)
 class HeaderMenu extends Component {
   state = { last: null }
   componentWillMount() {
@@ -188,24 +172,24 @@ class InnerRow extends Component {
     )
   }
 }
-
-const getPB = async () => {
+const getPBTagAndMagnetByTopic = async topic => {
   let cors = 'https://cors-anywhere.herokuapp.com/'
-  let f = await fetch(cors + 'thepiratebay.rocks/top/201')
+  let f = await fetch(cors + 'thepiratebay.rocks/top/' + topic)
   console.log(f.status)
-  if (f.status !== 200) f = await fetch(cors + 'pirateproxy.sh/top/201')
-  if (f.status !== 200) f = await fetch(cors + 'thepiratebay.red/top/201')
-  if (f.status !== 200) f = await fetch(cors + 'thepiratebay.org/top/201')
+  if (f.status !== 200) f = await fetch(cors + 'pirateproxy.sh/top/' + topic)
+  if (f.status !== 200) f = await fetch(cors + 'thepiratebay.red/top/' + topic)
+  if (f.status !== 200) f = await fetch(cors + 'thepiratebay.org/top/' + topic)
   if (!f.ok) {
     return
   }
+
   const body = await f.text()
   const $ = cheerio.load(body)
 
   const s = []
   let index = 0
   $('a[title="Download this torrent using magnet"]').each((a, item) => {
-    // console.log(item)
+    //console.log(item)
     const magnet = item.attribs.href
     const fullTag = $(item)
       .parent()
@@ -217,19 +201,34 @@ const getPB = async () => {
     if (url1.length) url = url1[0].attribs.href
     // else console.log('hmm', item)
     const id = magnet.match(/(?![magnet:?xt=urn:btih:])(.*)(?=&dn)/)[0]
-    const p = pbParse(fullTag)
+
     const newItem = {
       id,
       magnet,
       url,
-      ...p,
+      fullTag,
       index,
     }
+    // console.log(newItem)
     index++
     s.push(newItem)
   })
   return s
 }
+const topics = {
+  movies: '201',
+  music: '101',
+}
+const getPB = async () => {
+  const items = await getPBTagAndMagnetByTopic(topics.movies)
+  // console.log('items', items)
+  const s = items.map(x => ({
+    ...x,
+    ...pbParse(x.fullTag),
+  }))
+  return s
+}
+
 export const setExpiry = (key, value, hours = 1) => {
   let today = new Date()
   today.setHours(today.getHours() + hours)
