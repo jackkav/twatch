@@ -1,5 +1,4 @@
-export const pbParse = input => {
-  if (!input) return false
+const getUploadMetadata = input => {
   const size =
     input.match(/Size (.*?), ULed/) &&
     input.match(/Size (.*?), ULed/).length > 1 &&
@@ -8,6 +7,33 @@ export const pbParse = input => {
       .replace('MiB', 'MB')
       .replace('GiB', 'GB')
 
+  const uploadedIndex = input.indexOf('Uploaded')
+  const sizeIndex = input.indexOf(' Size')
+  const endOfTitleIndex = uploadedIndex
+  const y =
+    input.match(/2015/) || input.match(/2016/) || input.match(/2017/) || input.match(/2018/) || input.match(/2019/)
+  const year = y ? y.toString() : new Date().getFullYear().toString()
+  const yearIndex = input.slice(0, endOfTitleIndex - 1).indexOf(year)
+  const title = input
+    .slice(0, endOfTitleIndex - 1)
+    .replace(/\./g, ' ')
+    .replace(/\n/g, '')
+    .replace(/\t/g, '')
+    .trim()
+  const uploadedAtTime = input
+    .slice(uploadedIndex + 9, sizeIndex - 1)
+    .replace(/\./g, ' ')
+    .replace(/\n/g, '')
+    .replace(/\t/g, '')
+  const uploadedAt = parseLooseDate(uploadedAtTime)
+  const full = input
+    .replace(/\./g, ' ')
+    .replace(/\n/g, '')
+    .replace(/\t/g, '')
+    .trim()
+  return { title, yearIndex, size, year, uploadedAt, full }
+}
+const getMovieMetadata = (input, yearIndex) => {
   const r =
     input.match(/HDRip/i) ||
     input.match(/BRRip/i) ||
@@ -40,21 +66,6 @@ export const pbParse = input => {
   const hd = !lowQuality
   const qualityIndex = input.indexOf(quality)
 
-  const uploadedIndex = input.indexOf('Uploaded')
-  const sizeIndex = input.indexOf(' Size')
-  const endOfTitleIndex = uploadedIndex
-  const y =
-    input.match(/2015/) || input.match(/2016/) || input.match(/2017/) || input.match(/2018/) || input.match(/2019/)
-  const year = y ? y.toString() : new Date().getFullYear().toString()
-  const yearIndex = input.slice(0, endOfTitleIndex - 1).indexOf(year)
-
-  const title = input
-    .slice(0, endOfTitleIndex - 1)
-    .replace(/\./g, ' ')
-    .replace(/\n/g, '')
-    .replace(/\t/g, '')
-    .trim()
-
   const endOfMovieTitle = yearIndex > 0 ? yearIndex : qualityIndex
   const movieTitle = input
     .slice(0, endOfMovieTitle - 1)
@@ -62,29 +73,24 @@ export const pbParse = input => {
     .replace(/\n/g, '')
     .replace(/\t/g, '')
     .trim()
+  return { hd, movieTitle, quality }
+}
 
-  const full = input
-    .replace(/\./g, ' ')
-    .replace(/\n/g, '')
-    .replace(/\t/g, '')
-    .trim()
-
-  const uploadedAtTime = input
-    .slice(uploadedIndex + 9, sizeIndex - 1)
-    .replace(/\./g, ' ')
-    .replace(/\n/g, '')
-    .replace(/\t/g, '')
-  const uploadedAt = parseLooseDate(uploadedAtTime)
-
-  return {
-    quality,
-    size,
-    title,
-    movieTitle,
-    year,
-    uploadedAt,
-    full,
-    hd,
+const topics = {
+  movies: 'aggro.pb.201',
+  music: 'aggro.pb.101',
+}
+export const pbParse = (input, type = topics.movies) => {
+  if (!input) return false
+  const meta = getUploadMetadata(input)
+  if (type === topics.music) {
+    return meta
+  }
+  if (type === topics.movies) {
+    return {
+      ...meta,
+      ...getMovieMetadata(input, meta.yearIndex),
+    }
   }
 }
 

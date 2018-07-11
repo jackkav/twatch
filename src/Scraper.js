@@ -7,32 +7,58 @@ import fromNow from 'moment-from-now'
 import { Trailer } from './Trailer'
 import { Metadata } from './Metadata'
 import { Introduction, StyledButton } from './components'
+const topics = {
+  movies: 'aggro.pb.201',
+  movieId: '201',
+  music: 'aggro.pb.101',
+  musicId: '101',
+}
 export class Scraper extends Component {
   state = { movies: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1] }
   fetch = async () => {
     console.log('loading fresh scrape')
-    const movies = await getPB()
+    const movies = (await getPBTagAndMagnetByTopic(topics.movieId)).map(x => ({
+      ...x,
+      ...pbParse(x.fullTag, topics.movies),
+    }))
+    setExpiry(topics.movies, movies, 2)
+
     // console.log(movies)
 
     this.setState({
       movies: sortBy(movies, 'uploadedAt').reverse(),
       fresh: true,
     })
-
-    const scrapeKey = 'aggro.pb.201'
-    setExpiry(scrapeKey, movies, 2)
+  }
+  fetchMusic = async () => {
+    console.log('loading fresh 101 scrape')
+    const music = (await getPBTagAndMagnetByTopic(topics.musicId)).map(x => ({
+      ...x,
+      ...pbParse(x.fullTag, topics.music),
+    }))
+    console.log('t', music)
+    setExpiry(topics.music, music, 2)
+    this.setState({
+      movies: sortBy(music, 'uploadedAt').reverse(),
+    })
   }
   async componentWillMount() {
-    const scrapeKey = 'aggro.pb.201'
-    if (!isExpired(scrapeKey)) {
+    if (isExpired(topics.movies)) this.fetch()
+    else {
       console.log('loading cached pb scrape')
       this.setState({
-        movies: JSON.parse(localStorage.getItem(scrapeKey)),
+        movies: JSON.parse(localStorage.getItem(topics.movies)),
         fresh: false,
       })
-      return
     }
-    this.fetch()
+
+    if (isExpired(topics.music)) this.fetchMusic()
+    else {
+      console.log('loading cached pb 101 scrape')
+      this.setState({
+        music: JSON.parse(localStorage.getItem(topics.music)),
+      })
+    }
   }
 
   render() {
@@ -136,7 +162,7 @@ class ListElement extends Component {
           <div className="outline w-100 pa3">
             <div className="bg-animate hover-bg-dark-green">
               <div className="fl">
-                {this.props.movie.movieTitle} [{fromNow(this.props.movie.uploadedAt)}]
+                {this.props.movie.movieTitle || this.props.movie.title} [{fromNow(this.props.movie.uploadedAt)}]
               </div>
               {this.props.locked || <div className="fr">{this.props.movie.hd ? 'HD' : 'CAM'}</div>}
             </div>
@@ -172,13 +198,13 @@ class InnerRow extends Component {
     )
   }
 }
-const getPBTagAndMagnetByTopic = async topic => {
+const getPBTagAndMagnetByTopic = async id => {
   let cors = 'https://cors-anywhere.herokuapp.com/'
-  let f = await fetch(cors + 'thepiratebay.rocks/top/' + topic)
+  let f = await fetch(cors + 'thepiratebay.rocks/top/' + id)
   console.log(f.status)
-  if (f.status !== 200) f = await fetch(cors + 'pirateproxy.sh/top/' + topic)
-  if (f.status !== 200) f = await fetch(cors + 'thepiratebay.red/top/' + topic)
-  if (f.status !== 200) f = await fetch(cors + 'thepiratebay.org/top/' + topic)
+  if (f.status !== 200) f = await fetch(cors + 'pirateproxy.sh/top/' + id)
+  if (f.status !== 200) f = await fetch(cors + 'thepiratebay.red/top/' + id)
+  if (f.status !== 200) f = await fetch(cors + 'thepiratebay.org/top/' + id)
   if (!f.ok) {
     return
   }
@@ -215,21 +241,9 @@ const getPBTagAndMagnetByTopic = async topic => {
   })
   return s
 }
-const topics = {
-  movies: '201',
-  music: '101',
-}
-const getPB = async () => {
-  const items = await getPBTagAndMagnetByTopic(topics.movies)
-  // console.log('items', items)
-  const s = items.map(x => ({
-    ...x,
-    ...pbParse(x.fullTag),
-  }))
-  return s
-}
 
 export const setExpiry = (key, value, hours = 1) => {
+  if (!value || !value.length) return
   let today = new Date()
   today.setHours(today.getHours() + hours)
   localStorage.setItem(key + '.lastScrape', today.toISOString())
