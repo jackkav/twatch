@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import shortid from 'shortid'
-import { pbParse } from './parsers'
+import { pbParse, sanitiseMusic } from './parsers'
 import sortBy from 'lodash/sortBy'
 import cheerio from 'cheerio'
 import fromNow from 'moment-from-now'
@@ -39,36 +39,37 @@ export class Scraper extends Component {
     console.log('t', music)
     setExpiry(topics.music, music, 2)
     this.setState({
-      movies: sortBy(music, 'uploadedAt').reverse(),
+      music: sortBy(music, 'uploadedAt').reverse(),
     })
   }
   async componentWillMount() {
-    if (isExpired(topics.movies)) this.fetch()
-    else {
-      console.log('loading cached pb scrape')
-      this.setState({
-        movies: JSON.parse(localStorage.getItem(topics.movies)),
-        fresh: false,
-      })
-    }
+    // if (isExpired(topics.movies)) this.fetch()
+    // else {
+    console.log('loading cached pb scrape')
+    this.setState({
+      movies: JSON.parse(localStorage.getItem(topics.movies)),
+      fresh: false,
+    })
+    // }
 
-    if (isExpired(topics.music)) this.fetchMusic()
-    else {
-      console.log('loading cached pb 101 scrape')
-      this.setState({
-        music: JSON.parse(localStorage.getItem(topics.music)),
-      })
-    }
+    // if (isExpired(topics.music)) this.fetchMusic()
+    // else {
+    console.log('loading cached pb 101 scrape')
+    this.setState({
+      music: JSON.parse(localStorage.getItem(topics.music)),
+    })
+    // }
   }
 
   render() {
-    return <Main movies={this.state.movies} />
+    return <Main movies={this.state.movies} music={this.state.music} />
   }
 }
 
 class Main extends Component {
-  state = { showAll: false, locked: true }
-  toggle = () => this.setState(p => ({ showAll: !p.showAll }))
+  state = { showAll: false, locked: true, canSeeMusic: false }
+  toggleQuality = () => this.setState(p => ({ showAll: !p.showAll }))
+  toggleMedia = () => this.setState(p => ({ canSeeMusic: !p.canSeeMusic }))
   unlock = () => {
     this.setState({ locked: false })
     localStorage.setItem('unlocked', 'true')
@@ -79,18 +80,28 @@ class Main extends Component {
   render() {
     return (
       <div className="pa2 bg-gray avenir">
-        <Header toggle={this.toggle} unlock={this.unlock} locked={this.state.locked} showAll={this.state.showAll} />
-        {this.props.movies[0] === 1
-          ? this.props.movies.map(x => <ListElementSkeleton key={shortid.generate()} />)
-          : sortBy(this.props.movies, 'uploadedAt')
+        <Header
+          unlock={this.unlock}
+          locked={this.state.locked}
+          toggleQuality={this.toggleQuality}
+          showAll={this.state.showAll}
+          toggleMedia={this.toggleMedia}
+          canSeeMusic={this.state.canSeeMusic}
+        />
+        {this.state.canSeeMusic
+          ? sortBy(this.props.music, 'uploadedAt')
               .reverse()
-              .filter(x => this.state.showAll || x.hd)
-              .map(x => <ListElement key={shortid.generate()} movie={x} locked={this.state.locked} />)}
+              .map(x => <ListElement key={shortid.generate()} movie={x} locked={this.state.locked} />)
+          : this.props.movies[0] === 1
+            ? this.props.movies.map(x => <ListElementSkeleton key={shortid.generate()} />)
+            : sortBy(this.props.movies, 'uploadedAt')
+                .reverse()
+                .filter(x => this.state.showAll || x.hd)
+                .map(x => <ListElement key={shortid.generate()} movie={x} locked={this.state.locked} />)}
       </div>
     )
   }
 }
-
 class Header extends Component {
   state = {
     expanded: false,
@@ -106,7 +117,14 @@ class Header extends Component {
           </div>
         </div>
         {this.state.expanded && (
-          <HeaderMenu toggle={this.props.toggle} showAll={this.props.showAll} unlock={this.props.unlock} />
+          <HeaderMenu
+            unlock={this.props.unlock}
+            locked={this.state.locked}
+            toggleQuality={this.props.toggleQuality}
+            showAll={this.props.showAll}
+            toggleMedia={this.props.toggleMedia}
+            canSeeMusic={this.props.canSeeMusic}
+          />
         )}
       </div>
     )
@@ -126,11 +144,18 @@ class HeaderMenu extends Component {
   render() {
     return (
       <div className="flex flex-wrap bg-washed-green items-start pa3">
-        <StyledButton onClick={this.props.toggle}>{this.props.showAll ? 'Only show HD' : 'Show all'}</StyledButton>
-        <StyledButton onClick={this.props.unlock}>Don't Press This Button</StyledButton>
-        <div className="pa2">
+        {this.props.locked && <StyledButton onClick={this.props.unlock}>Don't Press This Button</StyledButton>}
+        <StyledButton onClick={this.props.toggleMedia}>
+          {this.props.canSeeMusic ? 'Show Movies' : 'Show Music'}
+        </StyledButton>
+        {this.props.canSeeMusic || (
+          <StyledButton onClick={this.props.toggleQuality}>
+            {this.props.music ? 'Only show HD' : 'Show all'}
+          </StyledButton>
+        )}
+        {/* <div className="pa2">
           <div>Cache expires: {fromNow(this.state.expires)}</div>
-        </div>
+        </div> */}
       </div>
     )
   }
@@ -162,9 +187,13 @@ class ListElement extends Component {
           <div className="outline w-100 pa3">
             <div className="bg-animate hover-bg-dark-green">
               <div className="fl">
-                {this.props.movie.movieTitle || this.props.movie.title} [{fromNow(this.props.movie.uploadedAt)}]
+                {this.props.movie.movieTitle || sanitiseMusic(this.props.movie.title)} [{fromNow(
+                  this.props.movie.uploadedAt
+                )}]
               </div>
-              {this.props.locked || <div className="fr">{this.props.movie.hd ? 'HD' : 'CAM'}</div>}
+              {this.props.locked || (
+                <div className="fr">{this.props.movie.movieTitle && (this.props.movie.hd ? 'HD' : 'CAM')}</div>
+              )}
             </div>
           </div>
         </div>
@@ -191,9 +220,7 @@ class InnerRow extends Component {
         <div className="w-1 pa3">
           <Trailer movie={this.props.movie} />
         </div>
-        <div className=" w-1 pa3">
-          <Metadata movie={this.props.movie} />
-        </div>
+        <div className=" w-1 pa3">{this.props.movie.movieTitle && <Metadata movie={this.props.movie} />}</div>
       </div>
     )
   }

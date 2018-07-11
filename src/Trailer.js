@@ -2,13 +2,17 @@ import React, { Component } from 'react'
 import { get } from 'lodash'
 import ReactLoading from 'react-loading'
 
+import { sanitiseMusic } from './parsers'
 export class Trailer extends Component {
   state = {
     isFetching: false,
   }
   async componentWillMount() {
     this.setState({ isFetching: true })
-    const { icon, watch } = await getTrailer(this.props.movie.movieTitle, this.props.movie.year)
+
+    const { icon, watch } = this.props.movieTitle
+      ? await getTrailer(this.props.movie.movieTitle, this.props.movie.year)
+      : await getMusicVideo(this.props.movie.title)
     this.setState({ isFetching: false, icon, watch })
   }
 
@@ -28,13 +32,19 @@ export class Trailer extends Component {
     )
   }
 }
+const getMusicVideo = async title => {
+  return getVideo(sanitiseMusic(title).replace(/-/g, ''))
+}
 const getTrailer = async (name, year) => {
-  const searchTerm = name + ' ' + year + ' trailer'
+  let searchTerm = name + ' ' + year + ' trailer'
+  return getVideo(searchTerm)
+}
+const getVideo = async searchTerm => {
+  console.log('search for this: ', searchTerm)
   let cors = 'https://cors-anywhere.herokuapp.com/'
   let f = await fetch(
     `${cors}https://www.googleapis.com/youtube/v3/search?key=AIzaSyBjnMTlF9ou968qeDBc6LQpN860jJ0Juj0&q=${searchTerm}&part=snippet`
   )
-  // console.log(f)
   let json = await f.json()
   const items = get(json, 'items')
   let first = {}

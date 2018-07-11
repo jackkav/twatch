@@ -1,3 +1,11 @@
+export const sanitiseMusic = input =>
+  input
+    .replace(/\(\d{4}\)/g, '')
+    .replace(/mp3/gi, '')
+    .replace(/\(320kbps\)/g, '')
+    .replace(/320kbps/g, '')
+    .replace(/\[.*\]/g, '')
+    .trim()
 const getUploadMetadata = input => {
   const size =
     input.match(/Size (.*?), ULed/) &&
