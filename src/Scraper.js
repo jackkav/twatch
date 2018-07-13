@@ -1,12 +1,14 @@
 import React, { Component } from 'react'
 import shortid from 'shortid'
 import { pbParse, sanitiseMusic } from './parsers'
+
 import sortBy from 'lodash/sortBy'
 import cheerio from 'cheerio'
 import fromNow from 'moment-from-now'
 import { Trailer } from './Trailer'
 import { Metadata } from './Metadata'
 import { Introduction, StyledButton } from './components'
+
 const topics = {
   movies: 'aggro.pb.201',
   movieId: '201',
@@ -43,22 +45,22 @@ export class Scraper extends Component {
     })
   }
   async componentWillMount() {
-    // if (isExpired(topics.movies)) this.fetch()
-    // else {
-    console.log('loading cached pb scrape')
-    this.setState({
-      movies: JSON.parse(localStorage.getItem(topics.movies)),
-      fresh: false,
-    })
-    // }
+    if (isExpired(topics.movies)) this.fetch()
+    else {
+      console.log('loading cached pb scrape')
+      this.setState({
+        movies: JSON.parse(localStorage.getItem(topics.movies)),
+        fresh: false,
+      })
+    }
 
-    // if (isExpired(topics.music)) this.fetchMusic()
-    // else {
-    console.log('loading cached pb 101 scrape')
-    this.setState({
-      music: JSON.parse(localStorage.getItem(topics.music)),
-    })
-    // }
+    if (isExpired(topics.music)) this.fetchMusic()
+    else {
+      console.log('loading cached pb 101 scrape')
+      this.setState({
+        music: JSON.parse(localStorage.getItem(topics.music)),
+      })
+    }
   }
 
   render() {
